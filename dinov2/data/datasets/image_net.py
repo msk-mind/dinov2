@@ -26,9 +26,9 @@ class _Split(Enum):
     @property
     def length(self) -> int:
         split_lengths = {
-            _Split.TRAIN: 1_281_167,
-            _Split.VAL: 50_000,
-            _Split.TEST: 100_000,
+            _Split.TRAIN: 100_000,
+            _Split.VAL: 10_000,
+            _Split.TEST: 10_000,
         }
         return split_lengths[self]
 
@@ -165,7 +165,7 @@ class ImageNet(ExtendedVisionDataset):
 
     def __len__(self) -> int:
         entries = self._get_entries()
-        assert len(entries) == self.split.length
+        #assert len(entries) == self.split.length
         return len(entries)
 
     def _load_labels(self, labels_path: str) -> List[Tuple[str, str]]:

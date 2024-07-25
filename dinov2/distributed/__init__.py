@@ -160,22 +160,7 @@ class _TorchDistributedEnvironment:
         if _is_slurm_job_process():
             return self._set_from_slurm_env()
 
-        env_vars = _collect_env_vars()
-        if not env_vars:
-            # Environment is not set
-            pass
-        elif len(env_vars) == len(_TORCH_DISTRIBUTED_ENV_VARS):
-            # Environment is fully set
-            return self._set_from_preset_env()
-        else:
-            # Environment is partially set
-            collected_env_vars = ", ".join(env_vars.keys())
-            raise RuntimeError(f"Partially set environment: {collected_env_vars}")
-
-        if torch.cuda.device_count() > 0:
-            return self._set_from_local()
-
-        raise RuntimeError("Can't initialize PyTorch distributed environment")
+        return self._set_from_preset_env()
 
     # Slurm job created with sbatch, submitit, etc...
     def _set_from_slurm_env(self):
@@ -199,11 +184,11 @@ class _TorchDistributedEnvironment:
         # logger.info("Initialization from preset environment")
         self.master_addr = os.environ["MASTER_ADDR"]
         self.master_port = os.environ["MASTER_PORT"]
-        self.rank = int(os.environ["RANK"])
+        self.rank = int(os.environ["RANK_OFFSET"]) + int(os.environ["SUBMITIT_LOCAL_LOCALID"])
         self.world_size = int(os.environ["WORLD_SIZE"])
         assert self.rank < self.world_size
-        self.local_rank = int(os.environ["LOCAL_RANK"])
-        self.local_world_size = int(os.environ["LOCAL_WORLD_SIZE"])
+        self.local_rank = int(os.environ["SUBMITIT_LOCAL_LOCALID"])
+        self.local_world_size = int(os.environ["SUBMITIT_LOCAL_NTASKS"])
         assert self.local_rank < self.local_world_size
 
     # Single node and GPU job (i.e. local script run)
