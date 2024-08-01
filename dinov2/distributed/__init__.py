@@ -112,8 +112,8 @@ _TORCH_DISTRIBUTED_ENV_VARS = (
     "MASTER_PORT",
     "RANK",
     "WORLD_SIZE",
-    "LOCAL_RANK",
-    "LOCAL_WORLD_SIZE",
+    #"LOCAL_RANK",
+    #LOCAL_WORLD_SIZE",
 )
 
 
@@ -184,12 +184,8 @@ class _TorchDistributedEnvironment:
         # logger.info("Initialization from preset environment")
         self.master_addr = os.environ["MASTER_ADDR"]
         self.master_port = os.environ["MASTER_PORT"]
-        self.rank = int(os.environ["RANK_OFFSET"]) + int(os.environ["SUBMITIT_LOCAL_LOCALID"])
+        self.rank = int(os.environ["RANK"])
         self.world_size = int(os.environ["WORLD_SIZE"])
-        assert self.rank < self.world_size
-        self.local_rank = int(os.environ["SUBMITIT_LOCAL_LOCALID"])
-        self.local_world_size = int(os.environ["SUBMITIT_LOCAL_NTASKS"])
-        assert self.local_rank < self.local_world_size
 
     # Single node and GPU job (i.e. local script run)
     def _set_from_local(self):
@@ -230,14 +226,14 @@ def enable(*, set_cuda_current_device: bool = True, overwrite: bool = False, all
         overwrite: If True, overwrites already set variables. Else fails.
     """
 
-    global _LOCAL_RANK, _LOCAL_WORLD_SIZE
+    #global _LOCAL_RANK, _LOCAL_WORLD_SIZE
     if _LOCAL_RANK >= 0 or _LOCAL_WORLD_SIZE >= 0:
         raise RuntimeError("Distributed mode has already been enabled")
-    torch_env = _TorchDistributedEnvironment()
-    torch_env.export(overwrite=overwrite)
+    #torch_env = _TorchDistributedEnvironment()
+    #torch_env.export(overwrite=overwrite)
 
-    if set_cuda_current_device:
-        torch.cuda.set_device(torch_env.local_rank)
+    #if set_cuda_current_device:
+        #torch.cuda.set_device(torch_env.local_rank)
 
     if allow_nccl_timeout:
         # This allows to use torch distributed timeout in a NCCL backend
@@ -250,6 +246,6 @@ def enable(*, set_cuda_current_device: bool = True, overwrite: bool = False, all
     dist.barrier()
 
     # Finalize setup
-    _LOCAL_RANK = torch_env.local_rank
-    _LOCAL_WORLD_SIZE = torch_env.local_world_size
+    #_LOCAL_RANK = torch_env.local_rank
+    #_LOCAL_WORLD_SIZE = torch_env.local_world_size
     _restrict_print_to_main_process()

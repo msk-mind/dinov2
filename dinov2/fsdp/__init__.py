@@ -40,13 +40,13 @@ def get_fsdp_wrapper(model_cfg, modules_to_wrap=set()):
 
     sharding_strategy_config = sharding_strategy_dict[model_cfg.sharding_strategy]
 
-    local_rank = distributed.get_local_rank()
+    #local_rank = distributed.get_local_rank()
 
     fsdp_wrapper = partial(
         FSDP,
         sharding_strategy=sharding_strategy_config,
         mixed_precision=mixed_precision_config,
-        device_id=local_rank,
+        #device_id=local_rank,
         sync_module_states=True,
         use_orig_params=True,
         auto_wrap_policy=ModuleWrapPolicy(modules_to_wrap),
