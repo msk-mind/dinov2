@@ -12,6 +12,10 @@ from functools import partial
 from fvcore.common.checkpoint import PeriodicCheckpointer
 import torch
 
+from PIL import PngImagePlugin
+PngImagePlugin.MAX_TEXT_CHUNK = 1048576 * 10
+
+
 from dinov2.data import SamplerType, make_data_loader, make_dataset
 from dinov2.data import collate_data_and_cast, DataAugmentationDINO, MaskingGenerator
 import dinov2.distributed as distributed

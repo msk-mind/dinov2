@@ -64,9 +64,9 @@ def get_slurm_partition(cluster_type: Optional[ClusterType] = None) -> Optional[
         return None
 
     SLURM_PARTITIONS = {
-        ClusterType.AWS: "learnlab",
-        ClusterType.FAIR: "learnlab",
-        ClusterType.RSC: "learn",
+        ClusterType.AWS: "hpc",
+        ClusterType.FAIR: "hpc",
+        ClusterType.RSC: "hpc",
     }
     return SLURM_PARTITIONS[cluster_type]
 
@@ -81,7 +81,7 @@ def get_slurm_executor_parameters(
         "tasks_per_node": num_gpus_per_node,  # one task per GPU
         "cpus_per_task": 10,
         "nodes": nodes,
-        "slurm_partition": get_slurm_partition(cluster_type),
+        "slurm_partition": "hpc",
     }
     # apply cluster-specific adjustments
     cluster_type = get_cluster_type(cluster_type)

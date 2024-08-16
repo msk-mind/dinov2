@@ -1,7 +1,10 @@
 # Copyright (c) Meta Platforms, Inc. and affiliates.
+# All rights reserved.
 #
-# This source code is licensed under the Apache License, Version 2.0
-# found in the LICENSE file in the root directory of this source tree.
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+# this file was changed
 
 import logging
 from enum import Enum
@@ -11,6 +14,7 @@ import torch
 from torch.utils.data import Sampler
 
 from .datasets import ImageNet, ImageNet22k
+from .datasets.CustomImageDataset import CustomImageDataset
 from .samplers import EpochSampler, InfiniteSampler, ShardedInfiniteSampler
 
 
@@ -58,6 +62,8 @@ def _parse_dataset_str(dataset_str: str):
             kwargs["split"] = ImageNet.Split[kwargs["split"]]
     elif name == "ImageNet22k":
         class_ = ImageNet22k
+    elif name == "CustomImageDataset":
+        class_ = CustomImageDataset
     else:
         raise ValueError(f'Unsupported dataset "{name}"')
 
@@ -93,7 +99,7 @@ def make_dataset(
         setattr(dataset, "transform", transform)
     if not hasattr(dataset, "target_transform"):
         setattr(dataset, "target_transform", target_transform)
-
+    
     return dataset
 
 
@@ -204,6 +210,7 @@ def make_data_loader(
     )
 
     logger.info("using PyTorch data loader")
+
     data_loader = torch.utils.data.DataLoader(
         dataset,
         sampler=sampler,
@@ -214,6 +221,8 @@ def make_data_loader(
         persistent_workers=persistent_workers,
         collate_fn=collate_fn,
     )
+    #for batch in data_loader:
+    #    print(batch)
 
     try:
         logger.info(f"# of batches: {len(data_loader):,d}")

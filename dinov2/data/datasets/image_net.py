@@ -41,7 +41,7 @@ class _Split(Enum):
             basename = f"{class_id}_{actual_index}"
         else:  # self in (_Split.VAL, _Split.TEST):
             basename = f"ILSVRC2012_{self.value}_{actual_index:08d}"
-        return os.path.join(dirname, basename + ".JPEG")
+        return os.path.join(dirname, basename + ".png")
 
     def parse_image_relpath(self, image_relpath: str) -> Tuple[str, int]:
         assert self != _Split.TEST
@@ -165,7 +165,7 @@ class ImageNet(ExtendedVisionDataset):
 
     def __len__(self) -> int:
         entries = self._get_entries()
-        assert len(entries) == self.split.length
+        #assert len(entries) == self.split.length
         return len(entries)
 
     def _load_labels(self, labels_path: str) -> List[Tuple[str, str]]:
